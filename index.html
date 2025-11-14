@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سازنده تصاویر مینیمال Napkin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .input-section {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .output-section {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+        }
+        
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn-download {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            margin-top: 15px;
+        }
+        
+        .canvas-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        #imageCanvas {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .instructions {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 سازنده تصاویر مینیمال Napkin</h1>
+    <p class="subtitle">متون خود را وارد کنید و تصویر حرفه‌ای دریافت کنید</p>
+    
+    <div class="container">
+        <div class="input-section">
+            <div class="form-group">
+                <label for="title">عنوان اصلی</label>
+                <input type="text" id="title" placeholder="مثال: چرا مشتریان از صفحه شما رد می‌شوند؟" value="چرا مشتریان از صفحه شما رد می‌شوند؟">
+            </div>
+            
+            <div class="form-group">
+                <label for="leftText">متن سمت چپ (مثبت)</label>
+                <textarea id="leftText" placeholder="متن مثبت را اینجا وارد کنید...">تصویر حرفه‌ای
+جلب اعتماد فوری</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="rightText">متن سمت راست (منفی)</label>
+                <textarea id="rightText" placeholder="متن منفی را اینجا وارد کنید...">تصویر آماتور
+از دست دادن مشتری</textarea>
+            </div>
+            
+            <button class="btn" onclick="generateImage()">🎨 ایجاد تصویر</button>
+            <button class="btn btn-download" onclick="downloadImage()">💾 دانلود تصویر</button>
+        </div>
+        
+        <div class="output-section">
+            <div class="canvas-container">
+                <canvas id="imageCanvas" width="1000" height="1000"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="instructions">
+        <p>📝 متن‌های خود را در کادرها وارد کرده و دکمه "ایجاد تصویر" را بزنید</p>
+        <p>💾 برای ذخیره تصویر از دکمه "دانلود تصویر" استفاده کنید</p>
+    </div>
+
+    <script>
+        function generateImage() {
+            const canvas = document.getElementById('imageCanvas');
+            const ctx = canvas.getContext('2d');
+            const title = document.getElementById('title').value;
+            const leftText = document.getElementById('leftText').value;
+            const rightText = document.getElementById('rightText').value;
+            
+            // پاک کردن کانواس
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // رنگ پس‌زمینه سفید
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // تقسیم صفحه به دو قسمت
+            const centerX = canvas.width / 2;
+            
+            // سمت چپ - سبز
+            ctx.fillStyle = '#e8f5e8';
+            ctx.fillRect(0, 0, centerX, canvas.height);
+            
+            // سمت راست - قرمز
+            ctx.fillStyle = '#ffe8e8';
+            ctx.fillRect(centerX, 0, centerX, canvas.height);
+            
+            // خط جداکننده
+            ctx.strokeStyle = '#cccccc';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([10, 5]);
+            ctx.beginPath();
+            ctx.moveTo(centerX, 100);
+            ctx.lineTo(centerX, canvas.height - 50);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // عنوان اصلی
+            ctx.fillStyle = '#333333';
+            ctx.font = 'bold 60px "Segoe UI", Tahoma, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(title, canvas.width / 2, 70);
+            
+            // آیکون‌ها و متن سمت چپ
+            ctx.fillStyle = '#4CAF50';
+            ctx.font = 'bold 80px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('✓', centerX / 2, 300);
+            
+            ctx.fillStyle = '#333333';
+            ctx.font = 'bold 50px "Segoe UI", Tahoma, sans-serif';
+            const leftLines = leftText.split('\n');
+            leftLines.forEach((line, index) => {
+                ctx.fillText(line, centerX / 2, 450 + (index * 80));
+            });
+            
+            // آیکون‌ها و متن سمت راست
+            ctx.fillStyle = '#f44336';
+            ctx.font = 'bold 80px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('✗', centerX + centerX / 2, 300);
+            
+            ctx.fillStyle = '#333333';
+            ctx.font = 'bold 50px "Segoe UI", Tahoma, sans-serif';
+            const rightLines = rightText.split('\n');
+            rightLines.forEach((line, index) => {
+                ctx.fillText(line, centerX + centerX / 2, 450 + (index * 80));
+            });
+            
+            // امضا
+            ctx.fillStyle = '#666666';
+            ctx.font = '30px "Segoe UI", Tahoma, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText('ساخته شده با 💬 Napkin', canvas.width - 30, canvas.height - 20);
+        }
+        
+        function downloadImage() {
+            const canvas = document.getElementById('imageCanvas');
+            const link = document.createElement('a');
+            link.download = 'napkin-image.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // تولید خودکار تصویر هنگام لود صفحه
+        window.onload = generateImage;
+    </script>
+</body>
+</html>
